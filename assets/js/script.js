@@ -11,43 +11,28 @@ function writePassword() {
 }
 
 function generatePassword() {
-  var optionString = "";
-  optionString += confirmLowerCase();
-  optionString += confirmUpperCase();
-  optionString += confirmNumber();
-  optionString += confirmSpecial();
+  var optionString = confirmType(lowerCasePrompt, lowerCaseOptions)
+                     + confirmType(upperCasePrompt, upperCaseOptions)
+                     + confirmType(numberPrompt, numberOptions)
+                     + confirmType(specialPrompt, specialOptions);
 
   return optionString;
 }
 
-function confirmLowerCase() {
-  var userResponse = confirm("Use lower case letters?");
-  if (userResponse) {
-    return "abcdefghijklmnopqrstuvwxyz";
-  }
-  return "";
-}
+const lowerCaseOptions = "abcdefghijklmnopqrstuvwxyz";
+const upperCaseOptions = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const numberOptions = "0123456789";
+const specialOptions = "~!@#$%^&*?+=-_";
 
-function confirmUpperCase() {
-  var userResponse = confirm("Use upper case letters?");
-  if (userResponse) {
-    return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  }
-  return "";
-}
+const lowerCasePrompt = "lower case letters";
+const upperCasePrompt = "upper case letters";
+const numberPrompt = "numeric characters";
+const specialPrompt = "special characters";
 
-function confirmNumber() {
-  var userResponse = confirm("Use numeric characters?");
+function confirmType(message, opts_list) {
+  var userResponse = confirm(`Use ${message}?`);
   if (userResponse) {
-    return "0123456789";
-  }
-  return "";
-}
-
-function confirmSpecial() {
-  var userResponse = confirm("Use special characters?");
-  if (userResponse) {
-    return "~!@#$%^&*?+=-_";
+    return opts_list
   }
   return "";
 }
