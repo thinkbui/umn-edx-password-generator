@@ -17,7 +17,6 @@ function generatePassword() {
 
   var passwordLength = promptLength();
   return buildPassword(passwordLength, guaranteedString, optionString);
-  // return [guaranteedString, optionString, passwordLength];
 }
 
 const lowerCaseOptions = "abcdefghijklmnopqrstuvwxyz";
@@ -32,6 +31,13 @@ const specialPrompt = "special characters";
 
 const promptData = [[lowerCasePrompt,lowerCaseOptions],[upperCasePrompt,upperCaseOptions],[numberPrompt,numberOptions],[specialPrompt,specialOptions]];
 
+// Cycles through each character type and prompts user whether to use each.
+// If a type is selected, a random character of it is selected to be
+// guaranteed to be used.  These characters are returned along with a
+// complete pool of characters that the rest of the password can be
+// generated from as an array.  At least one type must be selected.  If no
+// types are selected, an error is show and the user will be prompted for
+// each type again until that condition is satisfied.
 function confirmAllTypes() {
   var optionString = "";
   var guaranteedString = "";
@@ -50,6 +56,11 @@ function confirmAllTypes() {
   return [guaranteedString, optionString];
 }
 
+// This is the helper for the previous method.  It is what actually  prompts
+// the user for each character type, which is passed into it.  If a type is
+// selected, an arbitrary character of that type along with the entire pool
+// of characters of that type are returned as an array.  If that type is not
+// selected, an array of empty strings is returned instead.
 function confirmType(message, opts_list) {
   var userResponse = confirm(`Use ${message}?`);
   if (userResponse) {
@@ -59,6 +70,8 @@ function confirmType(message, opts_list) {
   return ["",""];
 }
 
+// This prompts the user for password length.  It validates that user input
+// is a number between 8 and 128.
 function promptLength() {
   var userResponse = parseInt(prompt("How long should the password be? (8-128 characters)"), 10);
   while (isNaN(userResponse) || userResponse < 8 || userResponse > 128) {
@@ -67,14 +80,18 @@ function promptLength() {
   return userResponse;
 }
 
+// This actually builds the password.  It creates a string the same length
+// as the final password populated only by spaces, replaces random spaces
+// with the guaranteed characters, then replaces the remainging spaces with
+// random characters from the provided pool.  The resulting string is
+// returned as the password.
 function buildPassword(length, chars, charOptions) {
   var passwordBuff = initPassword(length);
-  console.log(passwordBuff);
   passwordBuff = injectGuaranteedChars(chars, passwordBuff);
-  console.log(passwordBuff);
   return fillPasswordString(charOptions, passwordBuff);
 }
 
+// This is the helper that generates the initial blank password string.
 function initPassword(length) {
   var password = "";
   for(i=0;i<length;i++){
@@ -83,6 +100,11 @@ function initPassword(length) {
   return password;
 }
 
+// This is the helper that replaces random spaces with the characters that
+// are guaranteed to be in the final password result.  Checks are made to
+// ensure that two or more of the characters aren't be inserted into the
+// same spot (i.e. bumping each other out of the result).  The resulting
+// string is returned.
 function injectGuaranteedChars(chars,passwordString) {
   var stringBuff = passwordString;
   var rnd = rand(stringBuff.length);
@@ -95,6 +117,10 @@ function injectGuaranteedChars(chars,passwordString) {
   return stringBuff;
 }
 
+// This is the helper that fills in any remaining spaces of the password
+// string with arbitrary characters from the provided pools of characters.
+// If a spot has already been filled, this helper simply skips it.  The
+// resulting string is returned.
 function fillPasswordString(charOptions, passwordString) {
   var stringBuff = passwordString;
   for(i=0;i<stringBuff.length;i++) {
@@ -106,6 +132,9 @@ function fillPasswordString(charOptions, passwordString) {
   return stringBuff;
 }
 
+// This is simple helper that replaces a character in a string at a certain
+// index with the provided character, then returns the new string.  If the
+// provided index is invalid, the string is returned unchanged.
 function setCharAt (char, index, string) {
   if (index < 0 || index >= string.length) {
     return string;
